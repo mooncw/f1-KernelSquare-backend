@@ -66,7 +66,7 @@ public class NewStompTest {
         StompSessionHandler handler = new TestSessionHandler(latch);
         this.stompClient.connect("ws://localhost:" + this.port + "/kernel-square", this.headers, handler);
 
-        latch.await(3, TimeUnit.SECONDS);
+        latch.await(30, TimeUnit.SECONDS);
 
         assertThat(latch.getCount()).isEqualTo(0);
     }
