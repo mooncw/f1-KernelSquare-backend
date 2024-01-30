@@ -41,6 +41,11 @@ public class SecurityConfig {
 		"/topic/chat/room",
 		"/app/chat/message",
 		"/webjars/**",
+
+		// 소켓 테스트 코드 관련 경로는 permitAll
+		"/ws/**",
+		"/topic/test/room",
+		"/app/test/message",
 	};
 
 	private final String[] hasAnyAuthorityPatterns = new String[] {

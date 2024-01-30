@@ -64,7 +64,7 @@ public class NewStompTest {
 
         final CountDownLatch latch = new CountDownLatch(1);
         StompSessionHandler handler = new TestSessionHandler(latch);
-        this.stompClient.connect("ws://localhost:" + this.port + "/kernel-square", this.headers, handler);
+        this.stompClient.connect("ws://localhost:" + this.port + "/ws", this.headers, handler);
 
         latch.await(30, TimeUnit.SECONDS);
 
@@ -88,7 +88,7 @@ public class NewStompTest {
                 .sender("홍박사")
                 .build();
 
-            session.subscribe("/topic/chat/room/" + sendMessage.getRoomKey(), new StompFrameHandler() {
+            session.subscribe("/topic/test/room/" + sendMessage.getRoomKey(), new StompFrameHandler() {
                 @Override
                 public Type getPayloadType(StompHeaders headers) {
                     return ChatMessage.class;
@@ -111,7 +111,7 @@ public class NewStompTest {
             try {
                 System.out.println("여긴 룸키가 어떨까ㅣ ? ? ? " + sendMessage.getRoomKey());
 
-                session.send("/app/chat/message", sendMessage);
+                session.send("/app/test/message", sendMessage);
             } catch (Throwable t) {
                 latch.countDown();
             }
