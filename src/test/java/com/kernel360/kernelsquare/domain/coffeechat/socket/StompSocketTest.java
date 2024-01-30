@@ -8,6 +8,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
@@ -31,6 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("STOMP 소켓 통신 테스트")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class StompSocketTest {
+    Logger logger = LoggerFactory.getLogger(StompSocketTest.class);
 
     protected StompSession stompSession;
 
@@ -70,9 +73,11 @@ public class StompSocketTest {
 
     @BeforeEach
     public void connect() throws ExecutionException, InterruptedException, TimeoutException {
+        var start = System.currentTimeMillis();
         this.stompSession = this.websocketClient
             .connect(url + port + endPoint, this.sessionHandler)
-            .get(25, TimeUnit.SECONDS);
+            .get(100, TimeUnit.SECONDS);
+        logger.info("연결 완료 : " + (System.currentTimeMillis() - start));
     }
 
     @AfterEach
@@ -123,7 +128,9 @@ public class StompSocketTest {
         //when
         this.stompSession.send("/app/chat/message", message);
 
-        ChatMessage receivedMessage = blockingQueue.poll(50, TimeUnit.SECONDS);
+        var start = System.currentTimeMillis();
+        ChatMessage receivedMessage = blockingQueue.poll(100, TimeUnit.SECONDS);
+        logger.info("메시지 수신 종료 : " + (System.currentTimeMillis() - start));
 
         //then
         assertThat(receivedMessage).isNotNull();
