@@ -8,6 +8,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
@@ -29,9 +31,10 @@ import java.util.concurrent.TimeUnit;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
-@DisplayName("되냐 ? ?  ? ? ?? ? ? ? ? ? ? ")
+@DisplayName("로거 되냐 ? ?  ? ? ?? ? ? ? ? ? ? ")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class NewStompTest {
+    Logger logger = LoggerFactory.getLogger(NewStompTest.class);
 
     @LocalServerPort
     private int port;
@@ -66,7 +69,13 @@ public class NewStompTest {
         StompSessionHandler handler = new TestSessionHandler(latch);
         this.stompClient.connect("ws://localhost:" + this.port + "/ws", this.headers, handler);
 
+        long start = System.currentTimeMillis();
+
+        logger.info("시작");
+
         latch.await(30, TimeUnit.SECONDS);
+
+        logger.info("끝 : " + (System.currentTimeMillis() - start));
 
         assertThat(latch.getCount()).isEqualTo(0);
     }
@@ -109,8 +118,6 @@ public class NewStompTest {
                 }
             });
             try {
-                System.out.println("여긴 룸키가 어떨까ㅣ ? ? ? " + sendMessage.getRoomKey());
-
                 session.send("/app/test/message", sendMessage);
             } catch (Throwable t) {
                 latch.countDown();
