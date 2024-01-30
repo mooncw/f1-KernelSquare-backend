@@ -73,6 +73,7 @@ public class StompSocketTest {
 
     @BeforeEach
     public void connect() throws ExecutionException, InterruptedException, TimeoutException {
+        logger.info("연결 시작");
         var start = System.currentTimeMillis();
         this.stompSession = this.websocketClient
             .connect(url + port + endPoint, this.sessionHandler)
@@ -128,6 +129,7 @@ public class StompSocketTest {
         //when
         this.stompSession.send("/app/chat/message", message);
 
+        logger.info("메시지 수신 시작");
         var start = System.currentTimeMillis();
         ChatMessage receivedMessage = blockingQueue.poll(100, TimeUnit.SECONDS);
         logger.info("메시지 수신 종료 : " + (System.currentTimeMillis() - start));
