@@ -1,10 +1,6 @@
 name: Java CI with Gradle
 
 on:
-#  push:
-#    branches: [ "main" ]
-#  pull_request:
-#    branches: [ "main" ]
   pull_request_target:
     types: [opened, reopened, synchronize, labeled]
 
@@ -13,10 +9,12 @@ permissions:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
     if: |
       (github.event.action == 'opened' || github.event.action == 'reopened' || github.event.action == 'synchronize') &&
-      contains(github.event.pull_request.labels.*.name, 'CI')
+      contains(github.event.pull_request.labels.*.name, 'CI') &&
+      github.event.pull_request.base.ref == 'main'
+
+    runs-on: ubuntu-latest
 
     services:
       redis:
@@ -51,13 +49,6 @@ jobs:
 
       - name: Run chmod to make gradlew executable
         run: chmod +x ./gradlew
-
-#      - name: Docker Compose For Test
-#        run: |
-#          touch docker-compose.yml
-#          echo "${{ secrets.CI_DOCKER_COMPOSE }}" > docker-compose.yml
-#          echo docker-compose.yml
-#          docker-compose up -d
 
       - name: Test with Gradle
         run: ./gradlew test
