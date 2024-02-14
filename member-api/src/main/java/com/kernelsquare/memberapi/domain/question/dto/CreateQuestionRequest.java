@@ -12,8 +12,8 @@ import lombok.Builder;
 
 @Builder
 public record CreateQuestionRequest(
-	@NotNull(message = "회원 ID를 입력해 주세요.")
-	Long memberId,
+//	@NotNull(message = "회원 ID를 입력해 주세요.")
+//	Long memberId,
 	@NotBlank(message = "질문 제목을 입력해 주세요.")
 	String title,
 	@NotBlank(message = "질문 내용을 입력해 주세요.")

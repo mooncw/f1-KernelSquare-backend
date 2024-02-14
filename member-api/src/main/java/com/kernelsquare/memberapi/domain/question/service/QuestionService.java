@@ -43,9 +43,12 @@ public class QuestionService {
 	private final LevelRepository levelRepository;
 
 	@Transactional
-	public CreateQuestionResponse createQuestion(CreateQuestionRequest createQuestionRequest) {
-		Member member = memberRepository.findById(createQuestionRequest.memberId())
-			.orElseThrow(() -> new BusinessException(MemberErrorCode.MEMBER_NOT_FOUND));
+	public CreateQuestionResponse createQuestion(CreateQuestionRequest createQuestionRequest, Member member) {
+		// 질문 저장
+		// 기술 스택 저장
+
+//		Member member = memberRepository.findById(createQuestionRequest.memberId())
+//			.orElseThrow(() -> new BusinessException(MemberErrorCode.MEMBER_NOT_FOUND));
 
 		Question question = CreateQuestionRequest.toEntity(createQuestionRequest, member);
 		Question saveQuestion = questionRepository.save(question);

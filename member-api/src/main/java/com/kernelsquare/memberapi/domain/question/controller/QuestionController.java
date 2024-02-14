@@ -2,10 +2,14 @@ package com.kernelsquare.memberapi.domain.question.controller;
 
 import static com.kernelsquare.core.common_response.response.code.QuestionResponseCode.*;
 
+import com.kernelsquare.memberapi.domain.auth.dto.MemberPrincipal;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,6 +31,7 @@ import com.kernelsquare.core.dto.PageResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/v1")
 @RequiredArgsConstructor
@@ -35,11 +40,15 @@ public class QuestionController {
 
 	@PostMapping("/questions")
 	public ResponseEntity<ApiResponse<CreateQuestionResponse>> createQuestion(
+		@AuthenticationPrincipal
+		MemberPrincipal memberPrincipal,
 		@Valid
 		@RequestBody
 		CreateQuestionRequest createQuestionRequest
 	) {
-		CreateQuestionResponse createQuestionResponse = questionService.createQuestion(createQuestionRequest);
+
+		log.info("@AuthenticationPrincipal : " + memberPrincipal);
+		CreateQuestionResponse createQuestionResponse = questionService.createQuestion(createQuestionRequest, memberPrincipal.getMember());
 
 		return ResponseEntityFactory.toResponseEntity(QUESTION_CREATED, createQuestionResponse);
 	}

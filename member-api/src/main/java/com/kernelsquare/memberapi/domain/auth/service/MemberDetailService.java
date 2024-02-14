@@ -16,21 +16,23 @@ import com.kernelsquare.domainmysql.domain.member_authority.entity.MemberAuthori
 import com.kernelsquare.memberapi.domain.auth.dto.MemberPrincipal;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 public class MemberDetailService implements UserDetailsService {
 	private final MemberRepository memberRepository;
 
+	@Transactional(readOnly = true)
 	@Override
 	public UserDetails loadUserByUsername(final String username) throws UsernameNotFoundException {
-		String id, password;
+//		String id, password;
 		List<SimpleGrantedAuthority> authorities;
 		Member member = memberRepository.findById(Long.parseLong(username)).orElseThrow(() -> new BusinessException(
 			MemberErrorCode.MEMBER_NOT_FOUND));
 
-		id = String.valueOf(member.getId());
-		password = member.getPassword();
+//		id = String.valueOf(member.getId());
+//		password = member.getPassword();
 		authorities = member
 			.getAuthorities()
 			.stream()

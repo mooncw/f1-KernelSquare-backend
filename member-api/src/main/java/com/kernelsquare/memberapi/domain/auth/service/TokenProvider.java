@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import com.kernelsquare.memberapi.domain.auth.dto.MemberPrincipal;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -23,6 +24,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -68,6 +70,7 @@ public class TokenProvider implements InitializingBean {
 
 	private final RedisTemplate<Long, RefreshToken> redisTemplate;
 	private final AuthenticationManagerBuilder authenticationManagerBuilder;
+	private final MemberDetailService memberDetailService;
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
@@ -157,7 +160,9 @@ public class TokenProvider implements InitializingBean {
 			.map(SimpleGrantedAuthority::new)
 			.toList();
 
-		User principal = new User(claims.getSubject(), "", authorities);
+//		User principal = new User(claims.getSubject(), "", authorities);
+
+		MemberPrincipal principal = (MemberPrincipal) memberDetailService.loadUserByUsername(claims.getSubject());
 
 		return new UsernamePasswordAuthenticationToken(principal, token, authorities);
 	}

@@ -2,8 +2,11 @@ package com.kernelsquare.memberapi.domain.reservation.controller;
 
 import static com.kernelsquare.core.common_response.response.code.ReservationResponseCode.*;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,6 +25,7 @@ import com.kernelsquare.memberapi.domain.reservation.service.ReservationService;
 
 import lombok.RequiredArgsConstructor;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/v1")
 @RequiredArgsConstructor
@@ -29,11 +33,11 @@ public class ReservationController {
 	private final ReservationService reservationService;
 
 	@GetMapping("/coffeechat/reservations")
-	public ResponseEntity<ApiResponse<FindAllReservationResponse>> findAllReservationByMemberId(@AuthenticationPrincipal
-	MemberPrincipal memberPrincipal) {
-		FindAllReservationResponse findAllReservationResponse = reservationService.findAllReservationByMemberId(
-			memberPrincipal.getMember()
-				.getId());
+	public ResponseEntity<ApiResponse<FindAllReservationResponse>> findAllReservationByMemberId(
+		@AuthenticationPrincipal
+		UserDetails userDetails) {
+		FindAllReservationResponse findAllReservationResponse = reservationService.findAllReservationByMemberId(Long.valueOf(userDetails.getUsername()));
+		log.info("userDetails.getUsername() : " + userDetails.getUsername());
 
 		return ResponseEntityFactory.toResponseEntity(RESERVATION_ALL_FOUND, findAllReservationResponse);
 	}
@@ -47,10 +51,10 @@ public class ReservationController {
 
 	@PutMapping("/coffeechat/reservations/book")
 	public ResponseEntity<ApiResponse<AddReservationMemberResponse>> addReservationMember(
-		@AuthenticationPrincipal MemberPrincipal memberPrincipal, @RequestBody
+		@AuthenticationPrincipal UserDetails userDetails, @RequestBody
 	AddReservationMemberRequest addReservationMemberRequest) {
 		AddReservationMemberResponse addReservationMemberResponse = reservationService.AddReservationMember(
-			addReservationMemberRequest, memberPrincipal.getMember().getId());
+			addReservationMemberRequest, Long.valueOf(userDetails.getUsername()));
 
 		return ResponseEntityFactory.toResponseEntity(RESERVATION_SUCCESS, addReservationMemberResponse);
 	}
