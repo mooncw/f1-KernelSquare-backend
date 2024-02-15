@@ -36,10 +36,10 @@ public class AuthController {
 	@PostMapping("/auth/login")
 	public ResponseEntity<ApiResponse<LoginResponse>> login(
 		final @RequestBody @Validated(ValidationSequence.class) LoginRequest loginRequest) {
-		Member member = authService.login(loginRequest);
-		TokenResponse tokenResponse = tokenProvider.createToken(member, loginRequest);
-		LoginResponse loginResponse = LoginResponse.of(member, tokenResponse);
-		return ResponseEntityFactory.toResponseEntity(LOGIN_SUCCESS, loginResponse);
+//		Member member = authService.login(loginRequest);
+//		TokenResponse tokenResponse = tokenProvider.createToken(member, loginRequest);
+//		LoginResponse loginResponse = LoginResponse.of(member, tokenResponse);
+		return ResponseEntityFactory.toResponseEntity(LOGIN_SUCCESS, authService.login(loginRequest));
 	}
 
 	@PostMapping("/auth/signup")

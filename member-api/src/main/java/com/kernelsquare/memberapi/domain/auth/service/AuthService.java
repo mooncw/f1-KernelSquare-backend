@@ -2,6 +2,7 @@ package com.kernelsquare.memberapi.domain.auth.service;
 
 import java.util.List;
 
+import com.kernelsquare.memberapi.domain.auth.dto.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,9 +21,6 @@ import com.kernelsquare.domainmysql.domain.member.entity.Member;
 import com.kernelsquare.domainmysql.domain.member.repository.MemberRepository;
 import com.kernelsquare.domainmysql.domain.member_authority.entity.MemberAuthority;
 import com.kernelsquare.domainmysql.domain.member_authority.repository.MemberAuthorityRepository;
-import com.kernelsquare.memberapi.domain.auth.dto.LoginRequest;
-import com.kernelsquare.memberapi.domain.auth.dto.SignUpRequest;
-import com.kernelsquare.memberapi.domain.auth.dto.SignUpResponse;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -35,9 +33,10 @@ public class AuthService {
 	private final MemberAuthorityRepository memberAuthorityRepository;
 	private final AuthorityRepository authorityRepository;
 	private final LevelRepository levelRepository;
+	private final TokenProvider tokenProvider;
 
 	@Transactional
-	public Member login(final @Valid LoginRequest loginRequest) {
+	public LoginResponse login(final @Valid LoginRequest loginRequest) {
 		Member findMember = memberRepository.findByEmail(loginRequest.email())
 			.orElseThrow(() -> new BusinessException(AuthErrorCode.INVALID_ACCOUNT));
 		if (!passwordEncoder.matches(loginRequest.password(), findMember.getPassword())) {
@@ -50,7 +49,10 @@ public class AuthService {
 				.orElseThrow(() -> new BusinessException(LevelErrorCode.LEVEL_NOT_FOUND));
 			findMember.updateLevel(nextLevel);
 		}
-		return findMember;
+
+		TokenResponse tokenResponse = tokenProvider.createToken(findMember, loginRequest);
+
+        return LoginResponse.of(findMember, tokenResponse);
 	}
 
 	@Transactional

@@ -21,12 +21,18 @@ public class HashtagService {
 	@Transactional(readOnly = true)
 	public FindAllHashtagResponse findAllHashtag() {
 
-		List<FindHashtagResponse> result = new ArrayList<>();
+//		List<FindHashtagResponse> result = new ArrayList<>();
+//
+//		List<Hashtag> hashtagList = hashtagRepository.findAll();
+//
+//		for (Hashtag hashtag : hashtagList) {
+//			result.add(FindHashtagResponse.from(hashtag));
+//		}
 
-		List<Hashtag> hashtagList = hashtagRepository.findAll();
-		for (Hashtag hashtag : hashtagList) {
-			result.add(FindHashtagResponse.from(hashtag));
-		}
+		List<FindHashtagResponse> result = hashtagRepository.findAll().stream()
+			.map(FindHashtagResponse::from)
+			.toList();
+
 		return FindAllHashtagResponse.from(result);
 	}
 

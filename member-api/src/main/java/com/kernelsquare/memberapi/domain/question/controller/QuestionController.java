@@ -2,6 +2,7 @@ package com.kernelsquare.memberapi.domain.question.controller;
 
 import static com.kernelsquare.core.common_response.response.code.QuestionResponseCode.*;
 
+import com.kernelsquare.core.controller_version.V1Controller;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -28,9 +29,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/v1")
+//@RequestMapping("/api/v1")
 @RequiredArgsConstructor
-public class QuestionController {
+public class QuestionController extends V1Controller {
 	private final QuestionService questionService;
 
 	@PostMapping("/questions")
