@@ -11,10 +11,20 @@ core/src/main/java/com/kernelsquare/core/compose/data/db/**
 src/main/java/com/kernel360/kernelsquare/global/compose/mongo/**
 
 member-api/logs/**
-
 member-api/member-api/logs/**
-
 member-api/src/main/resources/application-local.yml
+
+admin-api/logs/**
+admin-api/admin-api/logs/**
+admin-api/src/main/resources/application-local.yml
+
+alert-api/logs/**
+alert-api/alert-api/logs/**
+alert-api/src/main/resources/application-local.yml
+
+chatting-api/logs/**
+chatting-api/member-api/logs/**
+chatting-api/src/main/resources/application-local.yml
 
 core/src/test/java/com/kernelsqaure/core/config/JasyptConfigTest.java
 
