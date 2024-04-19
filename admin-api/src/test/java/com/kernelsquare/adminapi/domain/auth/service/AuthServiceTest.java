@@ -1,10 +1,14 @@
 package com.kernelsquare.adminapi.domain.auth.service;
 
-import com.kernelsquare.adminapi.domain.auth.dto.LoginRequest;
+import com.kernelsquare.adminapi.domain.auth.validation.AuthValidation;
 import com.kernelsquare.core.type.AuthorityType;
+import com.kernelsquare.core.util.ImageUtils;
+import com.kernelsquare.domainmysql.domain.auth.command.AuthCommand;
+import com.kernelsquare.domainmysql.domain.auth.info.AuthInfo;
 import com.kernelsquare.domainmysql.domain.authority.entity.Authority;
 import com.kernelsquare.domainmysql.domain.level.entity.Level;
 import com.kernelsquare.domainmysql.domain.member.entity.Member;
+import com.kernelsquare.domainmysql.domain.member.info.MemberInfo;
 import com.kernelsquare.domainmysql.domain.member.repository.MemberReader;
 import com.kernelsquare.domainmysql.domain.member_authority.entity.MemberAuthority;
 import org.junit.jupiter.api.DisplayName;
@@ -30,6 +34,13 @@ public class AuthServiceTest {
 	private AuthService authService;
 	@Mock
 	private MemberReader memberReader;
+
+	@Mock
+	private AuthValidation authValidation;
+
+	@Mock
+	private TokenProvider tokenProvider;
+
 	@Spy
 	private PasswordEncoder passwordEncoder = Mockito.spy(BCryptPasswordEncoder.class);
 
@@ -39,11 +50,6 @@ public class AuthServiceTest {
 		//given
 		String testEmail = "inthemeantime@name.com";
 		String testPassword = "Letmego1!";
-
-		LoginRequest loginRequest = LoginRequest.builder()
-			.email(testEmail)
-			.password(testPassword)
-			.build();
 
 		Level level = Level.builder()
 			.id(1L)
@@ -61,30 +67,66 @@ public class AuthServiceTest {
 			.experience(1000L)
 			.level(level)
 			.imageUrl("s3:myface")
+			.authorities(List.of(
+				MemberAuthority.builder()
+					.member(Member.builder().build())
+					.authority(Authority.builder().authorityType(AuthorityType.ROLE_ADMIN).build())
+					.build()))
 			.build();
 
-		MemberAuthority memberAuthority = MemberAuthority.builder()
-			.member(member)
-			.authority(Authority.builder().authorityType(AuthorityType.ROLE_ADMIN).build())
+		AuthCommand.LoginMember command = AuthCommand.LoginMember.builder()
+			.email(testEmail)
+			.password(testPassword)
 			.build();
 
-		member.initAuthorities(List.of(memberAuthority));
+		doNothing()
+			.when(authValidation)
+			.validatePassword(anyString(), anyString());
+
+		doNothing()
+			.when(authValidation)
+			.validateAdminAuthority(any(Member.class));
 
 		doReturn(member)
 			.when(memberReader)
 			.findMember(anyString());
 
+		List<String> roles = member.getAuthorities().stream()
+			.map(MemberAuthority::getAuthority)
+			.map(Authority::getAuthorityType)
+			.map(AuthorityType::getDescription)
+			.toList();
+
+		String accessToken = "dawdawdawd";
+		String refreshToken = "ghsefaefaseg";
+
+		AuthInfo.LoginInfo loginInfo = AuthInfo.LoginInfo.of(MemberInfo.from(member), roles, accessToken, refreshToken);
+
+		doReturn(loginInfo)
+			.when(tokenProvider)
+			.createToken(any(MemberInfo.class));
+
 		//when
-		Member loginMember = authService.login(loginRequest);
+		AuthInfo.LoginInfo memberInfo = authService.login(command);
 
 		//then
-		assertThat(loginMember.getEmail()).isEqualTo(testEmail);
-		assertThat(passwordEncoder.matches(loginRequest.password(), loginMember.getPassword())).isTrue();
+		assertThat(memberInfo.memberId()).isEqualTo(member.getId());
+		assertThat(memberInfo.level()).isEqualTo(member.getLevel().getName());
+		assertThat(memberInfo.imageUrl()).isEqualTo(ImageUtils.makeImageUrl(member.getImageUrl()));
+		assertThat(memberInfo.introduction()).isEqualTo(member.getIntroduction());
+		assertThat(memberInfo.experience()).isEqualTo(member.getExperience());
+		assertThat(memberInfo.nickname()).isEqualTo(member.getNickname());
+		assertThat(memberInfo.roles()).isEqualTo(roles);
+		assertThat(memberInfo.accessToken()).isEqualTo(accessToken);
+		assertThat(memberInfo.refreshToken()).isEqualTo(refreshToken);
 
 		//verify
 		verify(memberReader, only()).findMember(anyString());
 		verify(memberReader, times(1)).findMember(anyString());
-		verify(passwordEncoder, times(2)).matches(anyString(), anyString());
+		verify(authValidation, times(1)).validatePassword(anyString(), anyString());
+		verify(authValidation, times(1)).validateAdminAuthority(any(Member.class));
+		verify(tokenProvider, only()).createToken(any(MemberInfo.class));
+		verify(tokenProvider, times(1)).createToken(any(MemberInfo.class));
 	}
 
 }

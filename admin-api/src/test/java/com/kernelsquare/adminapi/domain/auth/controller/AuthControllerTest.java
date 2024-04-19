@@ -1,8 +1,10 @@
 package com.kernelsquare.adminapi.domain.auth.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kernelsquare.adminapi.domain.auth.dto.*;
-import com.kernelsquare.adminapi.domain.auth.service.AuthService;
+import com.kernelsquare.adminapi.domain.auth.dto.AuthDto;
+import com.kernelsquare.adminapi.domain.auth.dto.TokenRequest;
+import com.kernelsquare.adminapi.domain.auth.dto.TokenResponse;
+import com.kernelsquare.adminapi.domain.auth.facade.AuthFacade;
 import com.kernelsquare.adminapi.domain.auth.service.TokenProvider;
 import com.kernelsquare.core.type.AuthorityType;
 import com.kernelsquare.domainmysql.domain.authority.entity.Authority;
@@ -33,7 +35,7 @@ public class AuthControllerTest {
 	private MockMvc mockMvc;
 
 	@MockBean
-	private AuthService authService;
+	private AuthFacade authFacade;
 
 	@MockBean
 	private TokenProvider tokenProvider;
@@ -77,7 +79,7 @@ public class AuthControllerTest {
 		List<MemberAuthority> memberAuthorityList = List.of(memberAuthority);
 		member.initAuthorities(memberAuthorityList);
 
-		LoginRequest loginRequest = LoginRequest.builder()
+		AuthDto.LoginRequest loginRequest = AuthDto.LoginRequest.builder()
 			.email("jugwang@naver.com")
 			.password("hashedPassword")
 			.build();
@@ -87,13 +89,23 @@ public class AuthControllerTest {
 			.refreshToken("ghsefaefaseg")
 			.build();
 
-		doReturn(member)
-			.when(authService)
-			.login(any(LoginRequest.class));
+		AuthDto.LoginResponse loginResponse = AuthDto.LoginResponse.builder()
+			.memberId(member.getId())
+			.nickname(member.getNickname())
+			.experience(member.getExperience())
+			.introduction(member.getIntroduction())
+			.level(member.getLevel().getName())
+			.roles(member.getAuthorities().stream()
+				.map(MemberAuthority::getAuthority)
+				.map(Authority::getAuthorityType)
+				.map(AuthorityType::getDescription)
+				.toList())
+			.tokenDto(tokenResponse)
+			.build();
 
-		doReturn(tokenResponse)
-			.when(tokenProvider)
-			.createToken(any(Member.class), any(LoginRequest.class));
+		doReturn(loginResponse)
+			.when(authFacade)
+			.login(any(AuthDto.LoginRequest.class));
 
 		String jsonRequest = objectMapper.writeValueAsString(loginRequest);
 
@@ -110,10 +122,8 @@ public class AuthControllerTest {
 			.andExpect(jsonPath("$.msg").value(LOGIN_SUCCESS.getMsg()));
 
 		//verify
-		verify(authService, times(1)).login(any(LoginRequest.class));
-		verify(authService, only()).login(any(LoginRequest.class));
-		verify(tokenProvider, times(1)).createToken(any(Member.class), any(LoginRequest.class));
-		verify(tokenProvider, only()).createToken(any(Member.class), any(LoginRequest.class));
+		verify(authFacade, times(1)).login(any(AuthDto.LoginRequest.class));
+		verify(authFacade, only()).login(any(AuthDto.LoginRequest.class));
 	}
 
 	@Test

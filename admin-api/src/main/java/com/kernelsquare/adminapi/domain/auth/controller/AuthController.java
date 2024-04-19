@@ -4,7 +4,6 @@ import com.kernelsquare.adminapi.domain.auth.dto.AuthDto;
 import com.kernelsquare.adminapi.domain.auth.dto.TokenRequest;
 import com.kernelsquare.adminapi.domain.auth.dto.TokenResponse;
 import com.kernelsquare.adminapi.domain.auth.facade.AuthFacade;
-import com.kernelsquare.adminapi.domain.auth.service.AuthService;
 import com.kernelsquare.adminapi.domain.auth.service.TokenProvider;
 import com.kernelsquare.core.common_response.ApiResponse;
 import com.kernelsquare.core.common_response.ResponseEntityFactory;
