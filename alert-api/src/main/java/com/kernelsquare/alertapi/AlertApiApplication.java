@@ -7,7 +7,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
     "com.kernelsquare.core",
     "com.kernelsquare.alertapi",
     "com.kernelsquare.domainmysql",
-    "com.kernelsquare.domainmongodb"})
+    "com.kernelsquare.domainmongodb",
+    "com.kernelsquare.domainkafka"})
 public class AlertApiApplication {
 
     public static void main(String[] args) {

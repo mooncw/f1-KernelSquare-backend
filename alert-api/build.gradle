@@ -29,6 +29,7 @@ dependencies {
     implementation project(":core")
     implementation project(":domain-mysql")
     implementation project(":domain-mongodb")
+    implementation project(":domain-kafka")
 
     implementation 'org.springframework.boot:spring-boot-starter-web'
     compileOnly 'org.projectlombok:lombok'
@@ -47,12 +48,6 @@ dependencies {
 
     //kafka
     implementation 'org.springframework.kafka:spring-kafka'
-
-    //mongoDB
-    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
-
-    //AOP
-    implementation 'org.springframework.boot:spring-boot-starter-aop'
 
     //Test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
