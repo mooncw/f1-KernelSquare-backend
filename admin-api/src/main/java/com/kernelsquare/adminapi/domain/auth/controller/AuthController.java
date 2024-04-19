@@ -1,15 +1,14 @@
 package com.kernelsquare.adminapi.domain.auth.controller;
 
-import com.kernelsquare.adminapi.domain.auth.dto.LoginRequest;
-import com.kernelsquare.adminapi.domain.auth.dto.LoginResponse;
+import com.kernelsquare.adminapi.domain.auth.dto.AuthDto;
 import com.kernelsquare.adminapi.domain.auth.dto.TokenRequest;
 import com.kernelsquare.adminapi.domain.auth.dto.TokenResponse;
+import com.kernelsquare.adminapi.domain.auth.facade.AuthFacade;
 import com.kernelsquare.adminapi.domain.auth.service.AuthService;
 import com.kernelsquare.adminapi.domain.auth.service.TokenProvider;
 import com.kernelsquare.core.common_response.ApiResponse;
 import com.kernelsquare.core.common_response.ResponseEntityFactory;
 import com.kernelsquare.core.validation.ValidationSequence;
-import com.kernelsquare.domainmysql.domain.member.entity.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -24,16 +23,16 @@ import static com.kernelsquare.core.common_response.response.code.AuthResponseCo
 @RequestMapping("/api/v1")
 @RequiredArgsConstructor
 public class AuthController {
-	private final AuthService authService;
 	private final TokenProvider tokenProvider;
+	private final AuthFacade authFacade;
 
 	@PostMapping("/auth/login")
-	public ResponseEntity<ApiResponse<LoginResponse>> login(
-		final @RequestBody @Validated(ValidationSequence.class) LoginRequest loginRequest) {
-		Member member = authService.login(loginRequest);
-		TokenResponse tokenResponse = tokenProvider.createToken(member, loginRequest);
-		LoginResponse loginResponse = LoginResponse.of(member, tokenResponse);
-		return ResponseEntityFactory.toResponseEntity(LOGIN_SUCCESS, loginResponse);
+	public ResponseEntity<ApiResponse<AuthDto.LoginResponse>> login(
+		final @RequestBody @Validated(ValidationSequence.class) AuthDto.LoginRequest request) {
+
+		AuthDto.LoginResponse response = authFacade.login(request);
+
+		return ResponseEntityFactory.toResponseEntity(LOGIN_SUCCESS, response);
 	}
 
 	@PostMapping("/auth/reissue")
