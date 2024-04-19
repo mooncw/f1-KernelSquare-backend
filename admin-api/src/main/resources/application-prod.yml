@@ -33,15 +33,10 @@ spring:
       max-request-size: 3MB
 
 
-  redis:
-    serialization:
-      class-property-type-name: RefreshToken.class
-    host: ENC(rldaR14yK8lZrjgv3VVwcxOv3RmJCpuvdvNcm5IDyi4XWIETc1Dt8PsCLANmey+e)
-    port: ENC(G7lvGcKcaeSmvbvL4s1bAIL3K0YNjH6VHaxGBFJ04/ORFFLp8hLMdZr3kAaGRH0u)
-
   data:
-    mongodb:
-      uri: ENC(AjN7dXKqXwotJaOKS8TpDtDYfXpx37ixGFQz88TkgbbNYloxQEKJ7vK5P+FicD1DXz/4S/rOXTkAfZPhXonjP2iIcOV+MwkBpPopbBdV6mWCOy4ryRLaKpWqmVpjAM+wYxY2D2i9m3CAvsu26Z14Ww==)
+    redis:
+      host: ENC(rldaR14yK8lZrjgv3VVwcxOv3RmJCpuvdvNcm5IDyi4XWIETc1Dt8PsCLANmey+e)
+      port: ENC(G7lvGcKcaeSmvbvL4s1bAIL3K0YNjH6VHaxGBFJ04/ORFFLp8hLMdZr3kAaGRH0u)
 
   security:
     jwt:
@@ -70,17 +65,10 @@ cloud:
       accessKey: ENC(vSqshpfgtV+Gnqz8nZCWC5lbbH7fycffGav8+V8zvspO7XHMdAgDAyY4FDlqyMLJGb4iz52TJZ8D3tMe4wgPUw==)
       secretKey: ENC(tqLdvJ5yGBHGBrAP03WkwnqVLJvF/PsVDv+C9kvS1JKd3lPPWVHdkNujxw4JpyUwK748QFYvtJ+lGcnj3irm5JN2hQKUWCljMG8cDKrfeTY=)
 
-kafka:
-  url: ENC(BoWks584Ld/FHNwAQw0DVnr6zzfYzo62ewM1XU3bocyghH9UKDtP1lEdziKIbxqW)
-
 custom:
   domain:
     image:
       baseUrl: ENC(UGLM7Z+GxC2FNA4Uh/k5aVS9QoN3fe/tFOmqJbhvpz2bsL3eL6Vl4hsGfm2zTx6fLFx+3X6BdrmYZtvu9P7vc/Ibh8DGVerG8RUtvin3Jh8Y7wlZUiImhiIeUoseuLc9)
-
-chatgpt:
-  rest-api-key: ENC(ePC1/RoAfMveYG80mr+KWCnl11atHlSllUmGISq7zWI51j4gubk854CXBEKUXlcDu51YYZfRnuJXUxhOVVUULlPSpXl++lE/VqZ/LukCwzoYmxGSBknMsmkXzOyo4p1v)
-  chat-api-url: https://api.openai.com/v1/chat/completions
 
 jasypt:
   encryptor:
