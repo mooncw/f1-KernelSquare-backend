@@ -85,7 +85,7 @@
 ## 아키텍처
 - 멀티모듈
 
-![멀티모듈_all](https://github.com/Kernel360/f1-KernelSquare-backend/assets/97713997/2536ac8b-80d3-47c5-92f4-5e550a25a4cd)
+![개인멀티모듈](https://github.com/mooncw/f1-KernelSquare-backend/assets/97713997/c0c1fc0d-6369-4cb0-bc99-509c07d566e3)
 
 
 
@@ -113,6 +113,3 @@
     </td>
   </tr>
 </table>
-
-## admin 레포지토리(어드민, 알림, 채팅, 모니터링)
-[KernelSquare-Admin](https://github.com/Kernel360/f1-KernelSquare-admin-backend)
