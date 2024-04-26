@@ -1,7 +1,9 @@
 # f1-KernelSquare
 지속가능한 성장을 위한 개발자 커뮤니티 [KernelSquare 사이트](https://kernelsquare.live)
 
-이 Repository는 팀 프로젝트가 끝난 후 개인적으로 진행한 것을 반영했습니다. [팀 프로젝트 Repository](https://github.com/Kernel360/f1-KernelSquare-backend)
+이 Repository는 팀 프로젝트가 끝난 후 개인적으로 진행한 것을 반영했습니다.
+
+팀원 간 issue와 Pull request 과정을 보고 싶은 분은 -> [팀 프로젝트 Repository](https://github.com/Kernel360/f1-KernelSquare-backend)
 
 ## 프로젝트 목적 및 기획
 - 소통을 통해 꾸준한 성장을 도모하는 개발자들을 위한 공간을 제공하기 위함
