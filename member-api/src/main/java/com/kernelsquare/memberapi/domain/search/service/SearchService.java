@@ -3,6 +3,7 @@ package com.kernelsquare.memberapi.domain.search.service;
 import java.util.List;
 
 import com.kernelsquare.core.common_response.error.code.TechStackErrorCode;
+import com.kernelsquare.domainmysql.domain.search.repository.SearchReader;
 import com.kernelsquare.domainmysql.domain.tech_stack.entity.TechStack;
 import com.kernelsquare.memberapi.domain.search.dto.SearchTechStackResponse;
 import org.springframework.data.domain.Page;
@@ -23,7 +24,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class SearchService {
-	private final SearchRepository searchRepository;
+	private final SearchReader searchReader;
 
 	public SearchQuestionResponse searchQuestions(Pageable pageable, String keyword) {
 
@@ -33,7 +34,7 @@ public class SearchService {
 
 		Integer currentPage = pageable.getPageNumber() + 1;
 
-		Page<Question> pages = searchRepository.searchQuestionsByKeyword(pageable, keyword);
+		Page<Question> pages = searchReader.searchQuestions(pageable, keyword);
 
 		Long totalCount = pages.getTotalElements();
 
@@ -65,7 +66,7 @@ public class SearchService {
 
 		Integer currentPage = pageable.getPageNumber() + 1;
 
-		Page<TechStack> pages = searchRepository.searchTechStacksByKeyword(pageable, keyword);
+		Page<TechStack> pages = searchReader.searchTechStacks(pageable, keyword);
 
 		Long totalCount = pages.getTotalElements();
 
