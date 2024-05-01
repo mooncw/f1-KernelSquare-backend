@@ -9,5 +9,5 @@ public interface HashtagReader {
 
     List<Hashtag> findAllInReservationArticle(Long articleId);
 
-    Long count(Long articleId);
+    Long countInReservationArticle(Long articleId);
 }

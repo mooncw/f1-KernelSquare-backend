@@ -2,10 +2,10 @@ package com.kernelsquare.domainmysql.domain.hashtag.repository;
 
 import com.kernelsquare.domainmysql.domain.hashtag.entity.Hashtag;
 
-import java.util.List;
-
 public interface HashtagStore {
+    void store(Hashtag hashtag);
+
     void delete(Long hashtagId);
 
-    void deleteAll(Long postId);
+    void deleteAllWithReservationArticle(Long postId);
 }

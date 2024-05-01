@@ -22,7 +22,7 @@ public class HashtagReaderImpl implements HashtagReader {
     }
 
     @Override
-    public Long count(Long articleId) {
+    public Long countInReservationArticle(Long articleId) {
         return hashtagRepository.countAllByReservationArticleId(articleId);
     }
 }
