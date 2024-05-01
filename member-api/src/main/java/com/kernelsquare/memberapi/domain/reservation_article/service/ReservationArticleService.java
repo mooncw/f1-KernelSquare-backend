@@ -1,74 +1,67 @@
 package com.kernelsquare.memberapi.domain.reservation_article.service;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.PriorityQueue;
-import java.util.UUID;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.kernelsquare.core.common_response.error.code.ReservationArticleErrorCode;
 import com.kernelsquare.core.common_response.error.exception.BusinessException;
 import com.kernelsquare.core.dto.PageResponse;
 import com.kernelsquare.core.dto.Pagination;
 import com.kernelsquare.domainmysql.domain.coffeechat.entity.ChatRoom;
-import com.kernelsquare.domainmysql.domain.coffeechat.repository.CoffeeChatRepository;
+import com.kernelsquare.domainmysql.domain.coffeechat.repository.CoffeeChatStore;
 import com.kernelsquare.domainmysql.domain.hashtag.entity.Hashtag;
-import com.kernelsquare.domainmysql.domain.hashtag.repository.HashtagRepository;
+import com.kernelsquare.domainmysql.domain.hashtag.repository.HashtagReader;
+import com.kernelsquare.domainmysql.domain.hashtag.repository.HashtagStore;
 import com.kernelsquare.domainmysql.domain.member.entity.Member;
-import com.kernelsquare.domainmysql.domain.member.repository.MemberRepository;
+import com.kernelsquare.domainmysql.domain.member.repository.MemberReader;
 import com.kernelsquare.domainmysql.domain.reservation.entity.Reservation;
-import com.kernelsquare.domainmysql.domain.reservation.repository.ReservationRepository;
+import com.kernelsquare.domainmysql.domain.reservation.repository.ReservationReader;
+import com.kernelsquare.domainmysql.domain.reservation.repository.ReservationStore;
 import com.kernelsquare.domainmysql.domain.reservation_article.entity.ReservationArticle;
-import com.kernelsquare.domainmysql.domain.reservation_article.repository.ReservationArticleRepository;
+import com.kernelsquare.domainmysql.domain.reservation_article.repository.ReservationArticleReader;
+import com.kernelsquare.domainmysql.domain.reservation_article.repository.ReservationArticleStore;
 import com.kernelsquare.memberapi.domain.hashtag.dto.FindHashtagResponse;
 import com.kernelsquare.memberapi.domain.hashtag.dto.UpdateHashtagRequest;
 import com.kernelsquare.memberapi.domain.reservation.dto.FindReservationResponse;
 import com.kernelsquare.memberapi.domain.reservation.dto.UpdateReservationRequest;
-import com.kernelsquare.memberapi.domain.reservation_article.dto.CreateReservationArticleRequest;
-import com.kernelsquare.memberapi.domain.reservation_article.dto.CreateReservationArticleResponse;
-import com.kernelsquare.memberapi.domain.reservation_article.dto.FindAllReservationArticleResponse;
-import com.kernelsquare.memberapi.domain.reservation_article.dto.FindReservationArticleResponse;
-import com.kernelsquare.memberapi.domain.reservation_article.dto.UpdateReservationArticleRequest;
-
+import com.kernelsquare.memberapi.domain.reservation_article.dto.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
 public class ReservationArticleService {
-	private final MemberRepository memberRepository;
-	private final ReservationArticleRepository reservationArticleRepository;
-	private final ReservationRepository reservationRepository;
-	private final CoffeeChatRepository coffeeChatRepository;
-	private final HashtagRepository hashtagRepository;
+	private final MemberReader memberReader;
+	private final ReservationArticleReader reservationArticleReader;
+	private final ReservationArticleStore reservationArticleStore;
+	private final ReservationReader reservationReader;
+	private final ReservationStore reservationStore;
+	private final CoffeeChatStore coffeeChatStore;
+	private final HashtagReader hashtagReader;
+	private final HashtagStore hashtagStore;
 
 	@Transactional
 	public CreateReservationArticleResponse createReservationArticle(
 		CreateReservationArticleRequest createReservationArticleRequest) {
-		Member member = memberRepository.findById(createReservationArticleRequest.memberId())
-			.orElseThrow(() -> new BusinessException(ReservationArticleErrorCode.MEMBER_NOT_FOUND));
+		Member member = memberReader.findMember(createReservationArticleRequest.memberId());
 
 		ReservationArticle reservationArticle = CreateReservationArticleRequest.toEntity(
 			createReservationArticleRequest, member);
 
 		// 예약창이 있는 경우 생성 불가 (1인 1예약창 정책)
-		if (reservationRepository.existsByMemberIdAndEndTimeAfter(
+		if (reservationReader.existsMyReservationSinceCurrentTime(
 			member.getId(),
 			LocalDateTime.now()
 		)) {
 			throw new BusinessException(ReservationArticleErrorCode.TOO_MANY_RESERVATION_ARTICLE);
 		}
 
-		ReservationArticle saveReservationArticle = reservationArticleRepository.save(reservationArticle);
+		ReservationArticle saveReservationArticle = reservationArticleStore.store(reservationArticle);
 
 		// HashTag 저장
 		for (String hashTags : createReservationArticleRequest.hashTags()) {
@@ -77,7 +70,7 @@ public class ReservationArticleService {
 				.reservationArticle(saveReservationArticle)
 				.build();
 
-			hashtagRepository.save(hashTag);
+			hashtagStore.store(hashTag);
 		}
 
 		LocalDateTime currentDateTime = LocalDateTime.now();
@@ -91,7 +84,7 @@ public class ReservationArticleService {
 				.expirationTime(dateTime.plusMinutes(30))
 				.build();
 
-			coffeeChatRepository.save(chatroom);
+			coffeeChatStore.store(chatroom);
 
 			if (startTime.isAfter(dateTime)) {
 				startTime = dateTime;
@@ -109,7 +102,7 @@ public class ReservationArticleService {
 				.chatRoom(chatroom)
 				.build();
 
-			reservationRepository.save(reservation);
+			reservationStore.store(reservation);
 		}
 
 		// 3일 기간 체크
@@ -134,7 +127,7 @@ public class ReservationArticleService {
 	public PageResponse<FindAllReservationArticleResponse> findAllReservationArticle(Pageable pageable) {
 
 		Integer currentPage = pageable.getPageNumber() + 1;
-		Page<ReservationArticle> pages = reservationArticleRepository.findAll(pageable);
+		Page<ReservationArticle> pages = reservationArticleReader.findAllPage(pageable);
 		Integer totalPages = pages.getTotalPages();
 
 		if (totalPages == 0)
@@ -148,12 +141,12 @@ public class ReservationArticleService {
 
 		List<FindAllReservationArticleResponse> responsePages = pages.getContent().stream()
 			.map(article -> {
-				Long coffeeChatCount = reservationArticleRepository.countAllByMemberIdAndEndTimeBefore(
+				Long coffeeChatCount = reservationArticleReader.countBeforeMyReservationArticleEndTime(
 					article.getMember().getId(),
 					LocalDateTime.now());
-				Long availableReservationCount = reservationRepository.countByReservationArticleIdAndMemberIdIsNull(
+				Long availableReservationCount = reservationReader.countAvailableInReservationArticle(
 					article.getId());
-				Long totalReservationCount = reservationRepository.countAllByReservationArticleId(article.getId());
+				Long totalReservationCount = reservationReader.countInReservationArticle(article.getId());
 				Boolean articleStatus = checkIfReservationWithinTheAvailablePeriod(article.getStartTime());
 				return FindAllReservationArticleResponse.of(
 					article.getMember(),
@@ -184,16 +177,16 @@ public class ReservationArticleService {
 
 	@Transactional(readOnly = true)
 	public FindReservationArticleResponse findReservationArticle(Long postId) {
-		ReservationArticle reservationArticle = reservationArticleRepository.findById(postId)
-			.orElseThrow(() -> new BusinessException(ReservationArticleErrorCode.RESERVATION_ARTICLE_NOT_FOUND));
+		ReservationArticle reservationArticle = reservationArticleReader.find(postId);
+
 		Member member = reservationArticle.getMember();
 
-		List<Hashtag> hashtags = hashtagRepository.findAllByReservationArticleId(postId);
+		List<Hashtag> hashtags = hashtagReader.findAllInReservationArticle(postId);
 		List<FindHashtagResponse> findHashtagResponses = hashtags.stream()
 			.map(FindHashtagResponse::from)
 			.toList();
 
-		List<Reservation> reservations = reservationRepository.findAllByReservationArticleId(postId);
+		List<Reservation> reservations = reservationReader.findAllInReservationArticle(postId);
 		List<FindReservationResponse> findReservationResponses = reservations.stream()
 			.map(FindReservationResponse::from)
 			.toList();
@@ -204,8 +197,7 @@ public class ReservationArticleService {
 
 	@Transactional
 	public void updateReservationArticle(Long postId, UpdateReservationArticleRequest updateReservationArticleRequest) {
-		ReservationArticle reservationArticle = reservationArticleRepository.findById(postId)
-			.orElseThrow(() -> new BusinessException(ReservationArticleErrorCode.RESERVATION_ARTICLE_NOT_FOUND));
+		ReservationArticle reservationArticle = reservationArticleReader.find(postId);
 
 		// 멘토인지, 본인이 쓴 글인지 확인
 		if (!reservationArticle.getMember().getId().equals(updateReservationArticleRequest.memberId())) {
@@ -237,21 +229,21 @@ public class ReservationArticleService {
 			}
 
 			// 수정된 해시태그 10개 넘는지 체크로직
-			long currentHashtagCount = hashtagRepository.countAllByReservationArticleId(postId);
+			long currentHashtagCount = hashtagReader.countInReservationArticle(postId);
 			long updatedHashtagCount = currentHashtagCount + addHashtagCount - removeHashtagCount;
 			if (updatedHashtagCount >= 10) {
 				throw new BusinessException(ReservationArticleErrorCode.TOO_MANY_HASHTAG);
 			}
 
 			// 체크로직을 통과했다면 add 는 더하고 remove 는 제거 (repository 로 반영)
-			removeHashtags.forEach((id, content) -> hashtagRepository.deleteById(id));
+			removeHashtags.forEach((id, content) -> hashtagStore.delete(id));
 			for (String hashTags : addHashtags) {
 				Hashtag hashTag = Hashtag.builder()
 					.content(hashTags)
 					.reservationArticle(reservationArticle)
 					.build();
 
-				hashtagRepository.save(hashTag);
+				hashtagStore.store(hashTag);
 			}
 		}
 
@@ -274,7 +266,7 @@ public class ReservationArticleService {
 			}
 
 			// 수정된 날짜들이 10개가 넘는지 체크로직
-			long currentReservationCount = reservationRepository.countAllByReservationArticleId(postId);
+			long currentReservationCount = reservationReader.countInReservationArticle(postId);
 			long updatedReservationCount = currentReservationCount + addReservationCount - removeReservationCount;
 			if (updatedReservationCount >= 10) {
 				throw new BusinessException(ReservationArticleErrorCode.TOO_MANY_RESERVATION);
@@ -282,7 +274,7 @@ public class ReservationArticleService {
 
 			// 수정된 날짜들이 최대 기간 3일을 넘는지 체크로직
 			Map<Long, LocalDateTime> currentReservations = new HashMap<>();
-			List<Reservation> currentReservationsList = reservationRepository.findAllByReservationArticleId(postId);
+			List<Reservation> currentReservationsList = reservationReader.findAllInReservationArticle(postId);
 			for (Reservation reservation : currentReservationsList) {
 				currentReservations.put(reservation.getId(), reservation.getStartTime());
 			}
@@ -318,14 +310,14 @@ public class ReservationArticleService {
 			}
 
 			// 두 체크로직을 통과했다면 add 는 더하고 remove 는 제거 (repository 로 반영)
-			removeReservations.forEach((reservationId, startTime) -> reservationRepository.deleteById(reservationId));
+			removeReservations.forEach((reservationId, startTime) -> reservationStore.delete(reservationId));
 			for (LocalDateTime dateTime : addReservations) {
 				// 새로운 Chatroom 생성
 				ChatRoom chatroom = ChatRoom.builder()
 					.roomKey(UUID.randomUUID().toString())
 					.build();
 
-				coffeeChatRepository.save(chatroom);
+				coffeeChatStore.store(chatroom);
 
 				// Reservation 생성 및 설정
 				Reservation reservation = Reservation.builder()
@@ -335,15 +327,14 @@ public class ReservationArticleService {
 					.chatRoom(chatroom)
 					.build();
 
-				reservationRepository.save(reservation);
+				reservationStore.store(reservation);
 			}
 		}
 	}
 
 	@Transactional
 	public void deleteReservationArticle(Long postId) {
-		ReservationArticle reservationArticle = reservationArticleRepository.findById(postId)
-			.orElseThrow(() -> new BusinessException(ReservationArticleErrorCode.RESERVATION_ARTICLE_NOT_FOUND));
+		ReservationArticle reservationArticle = reservationArticleReader.find(postId);
 
 		LocalDate currentDate = LocalDateTime.now().toLocalDate();
 		LocalDate startDate = reservationArticle.getStartTime().toLocalDate();
@@ -352,13 +343,13 @@ public class ReservationArticleService {
 			throw new BusinessException(ReservationArticleErrorCode.DELETE_ONLY_BEFORE_7DAYS);
 		}
 
-		reservationArticleRepository.deleteById(postId);
+		reservationArticleStore.delete(postId);
 
-		coffeeChatRepository.deleteChatRoom(postId);
+		coffeeChatStore.deleteWithReservationArticle(postId);
 
-		reservationRepository.deleteAllByReservationArticleId(postId);
+		reservationStore.deleteAllByReservationArticleId(postId);
 
-		hashtagRepository.deleteAllByReservationArticleId(postId);
+		hashtagStore.deleteAllWithReservationArticle(postId);
 	}
 
 }
