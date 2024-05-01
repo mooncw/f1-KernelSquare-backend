@@ -6,4 +6,10 @@ public interface MemberReader {
     Member findMember(Long memberId);
 
     Member findMember(String email);
+
+    Member findMemberWithNickname(String nickname);
+
+    Boolean existsMemberEmail(String email);
+
+    Boolean existsMemberNickname(String nickname);
 }

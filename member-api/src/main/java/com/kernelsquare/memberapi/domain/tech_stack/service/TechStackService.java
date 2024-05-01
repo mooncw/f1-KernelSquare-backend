@@ -5,7 +5,7 @@ import com.kernelsquare.core.common_response.error.exception.BusinessException;
 import com.kernelsquare.core.dto.PageResponse;
 import com.kernelsquare.core.dto.Pagination;
 import com.kernelsquare.domainmysql.domain.tech_stack.entity.TechStack;
-import com.kernelsquare.domainmysql.domain.tech_stack.repository.TechStackRepository;
+import com.kernelsquare.domainmysql.domain.tech_stack.repository.TechStackReader;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,13 +17,13 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class TechStackService {
-	private final TechStackRepository techStackRepository;
+	private final TechStackReader techStackReader;
 
 	@Transactional(readOnly = true)
 	public PageResponse<String> findAllTechStacks(Pageable pageable) {
 		Integer currentPage = pageable.getPageNumber() + 1;
 
-		Page<TechStack> pages = techStackRepository.findAll(pageable);
+		Page<TechStack> pages = techStackReader.findAllPage(pageable);
 
 		Integer totalPages = pages.getTotalPages();
 

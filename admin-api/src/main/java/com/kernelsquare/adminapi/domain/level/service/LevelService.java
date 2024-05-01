@@ -1,32 +1,29 @@
 package com.kernelsquare.adminapi.domain.level.service;
 
-import java.util.List;
-
+import com.kernelsquare.adminapi.domain.level.dto.*;
+import com.kernelsquare.core.common_response.error.code.LevelErrorCode;
+import com.kernelsquare.core.common_response.error.exception.BusinessException;
+import com.kernelsquare.domainmysql.domain.level.entity.Level;
+import com.kernelsquare.domainmysql.domain.level.repository.LevelReader;
+import com.kernelsquare.domainmysql.domain.level.repository.LevelStore;
+import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.kernelsquare.adminapi.domain.level.dto.CreateLevelRequest;
-import com.kernelsquare.adminapi.domain.level.dto.CreateLevelResponse;
-import com.kernelsquare.adminapi.domain.level.dto.FindAllLevelResponse;
-import com.kernelsquare.adminapi.domain.level.dto.UpdateLevelRequest;
-import com.kernelsquare.adminapi.domain.level.dto.UpdateLevelResponse;
-import com.kernelsquare.core.common_response.error.code.LevelErrorCode;
-import com.kernelsquare.core.common_response.error.exception.BusinessException;
-import com.kernelsquare.domainmysql.domain.level.entity.Level;
-import com.kernelsquare.domainmysql.domain.level.repository.LevelRepository;
-
-import lombok.RequiredArgsConstructor;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class LevelService {
-	private final LevelRepository levelRepository;
+	private final LevelReader levelReader;
+	private final LevelStore levelStore;
 
+	@Transactional
 	public CreateLevelResponse createLevel(CreateLevelRequest createLevelRequest) {
 		Level level = CreateLevelRequest.toEntity(createLevelRequest);
 		try {
-			levelRepository.saveAndFlush(level);
+			levelStore.store(level);
 		} catch (DataIntegrityViolationException e) {
 			throw new BusinessException(LevelErrorCode.LEVEL_ALREADY_EXISTED);
 		}
@@ -35,24 +32,22 @@ public class LevelService {
 
 	@Transactional(readOnly = true)
 	public FindAllLevelResponse findAllLevel() {
-		List<Level> levelList = levelRepository.findAll();
+		List<Level> levelList = levelReader.findAll();
 		return FindAllLevelResponse.from(levelList);
 	}
 
 	@Transactional
 	public void deleteLevel(Long levelId) {
-		levelRepository.deleteById(levelId);
+		levelStore.delete(levelId);
 	}
 
 	@Transactional
 	public UpdateLevelResponse updateLevel(Long levelId, UpdateLevelRequest updateLevelRequest) {
-		Level level = levelRepository.findById(levelId)
-			.orElseThrow(() -> new BusinessException(LevelErrorCode.LEVEL_NOT_FOUND));
+		Level level = levelReader.find(levelId);
 
-		levelRepository.findByNameAndIdNot(level.getName(), levelId)
-			.ifPresent(l -> {
-				throw new BusinessException(LevelErrorCode.LEVEL_ALREADY_EXISTED);
-			});
+		if (levelReader.existsLevelOtherThanId(updateLevelRequest.name(), levelId)) {
+			throw new BusinessException(LevelErrorCode.LEVEL_ALREADY_EXISTED);
+		}
 
 		level.update(updateLevelRequest.name(), updateLevelRequest.imageUrl(), updateLevelRequest.levelUpperLimit());
 

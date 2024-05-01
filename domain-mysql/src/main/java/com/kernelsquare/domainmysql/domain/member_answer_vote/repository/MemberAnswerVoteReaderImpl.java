@@ -14,13 +14,13 @@ public class MemberAnswerVoteReaderImpl implements MemberAnswerVoteReader {
     private final MemberAnswerVoteRepository memberAnswerVoteRepository;
 
     @Override
-    public MemberAnswerVote findByMemberIdAndAnswerId(Long memberId, Long answerId) {
+    public MemberAnswerVote findMyVoteInAnswer(Long memberId, Long answerId) {
         return memberAnswerVoteRepository.findByMemberIdAndAnswerId(memberId, answerId)
             .orElseThrow(() -> new BusinessException(MemberAnswerVoteErrorCode.MEMBER_ANSWER_VOTE_NOT_FOUND));
     }
 
     @Override
-    public Boolean existsByMemberIdAndAnswerId(Long memberId, Long answerId) {
+    public Boolean existsMyVoteInAnswer(Long memberId, Long answerId) {
         return memberAnswerVoteRepository.existsByMemberIdAndAnswerId(memberId, answerId);
     }
 

@@ -6,20 +6,32 @@ import com.kernelsquare.domainmysql.domain.level.entity.Level;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 @RequiredArgsConstructor
 public class LevelReaderImpl implements LevelReader {
     private final LevelRepository levelRepository;
 
     @Override
-    public Level findLevel(Long name) {
+    public Level findByLevelName(Long name) {
         return levelRepository.findByName(name)
             .orElseThrow(() -> new BusinessException(LevelErrorCode.LEVEL_NOT_FOUND));
     }
 
     @Override
-    public Level findLevelOtherThanId(Long levelName, Long levelId) {
-        return levelRepository.findByNameAndIdNot(levelName, levelId)
-            .orElseThrow(() -> new BusinessException(LevelErrorCode.LEVEL_ALREADY_EXISTED));
+    public Level find(Long levelId) {
+        return levelRepository.findById(levelId)
+            .orElseThrow(() -> new BusinessException(LevelErrorCode.LEVEL_NOT_FOUND));
+    }
+
+    @Override
+    public Boolean existsLevelOtherThanId(Long levelName, Long levelId) {
+        return levelRepository.existsByNameAndIdNot(levelName, levelId);
+    }
+
+    @Override
+    public List<Level> findAll() {
+        return levelRepository.findAll();
     }
 }

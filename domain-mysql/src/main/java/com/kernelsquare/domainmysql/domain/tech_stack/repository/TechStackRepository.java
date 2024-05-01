@@ -9,5 +9,5 @@ import com.kernelsquare.domainmysql.domain.tech_stack.entity.TechStack;
 public interface TechStackRepository extends JpaRepository<TechStack, Long> {
     Optional<TechStack> findBySkill(String skill);
 
-    boolean existsBySkill(String skill);
+    Boolean existsBySkill(String skill);
 }

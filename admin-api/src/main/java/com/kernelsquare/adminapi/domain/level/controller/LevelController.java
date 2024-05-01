@@ -62,6 +62,7 @@ public class LevelController {
 	public ResponseEntity<ApiResponse<UpdateLevelResponse>> updateLevel(
 		@PathVariable
 		Long levelId,
+		@Valid
 		@RequestBody
 		UpdateLevelRequest updateLevelRequest
 	) {

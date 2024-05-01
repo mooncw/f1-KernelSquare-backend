@@ -2,8 +2,14 @@ package com.kernelsquare.domainmysql.domain.level.repository;
 
 import com.kernelsquare.domainmysql.domain.level.entity.Level;
 
-public interface LevelReader {
-    Level findLevel(Long name);
+import java.util.List;
 
-    Level findLevelOtherThanId(Long levelName, Long levelId);
+public interface LevelReader {
+    Level findByLevelName(Long levelName);
+
+    Level find(Long levelId);
+
+    Boolean existsLevelOtherThanId(Long levelName, Long levelId);
+
+    List<Level> findAll();
 }
