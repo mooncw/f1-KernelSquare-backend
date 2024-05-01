@@ -1,5 +1,8 @@
 package com.kernelsquare.domainmysql.domain.reservation_article.repository;
 
+import com.kernelsquare.core.common_response.error.code.ReservationErrorCode;
+import com.kernelsquare.core.common_response.error.exception.BusinessException;
+import com.kernelsquare.domainmysql.domain.reservation_article.entity.ReservationArticle;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -13,5 +16,11 @@ public class ReservationArticleReaderImpl implements ReservationArticleReader {
     @Override
     public Long countBeforeMyReservationArticleEndTime(Long memberId, LocalDateTime currentTime) {
         return reservationArticleRepository.countAllByMemberIdAndEndTimeBefore(memberId, currentTime);
+    }
+
+    @Override
+    public ReservationArticle find(Long reservationArticleId) {
+        return reservationArticleRepository.findById(reservationArticleId)
+            .orElseThrow(() -> new BusinessException(ReservationErrorCode.RESERVATION_ARTICLE_NOT_FOUND));
     }
 }
