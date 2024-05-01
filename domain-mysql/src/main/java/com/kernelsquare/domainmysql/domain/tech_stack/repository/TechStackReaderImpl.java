@@ -4,6 +4,8 @@ import com.kernelsquare.core.common_response.error.code.TechStackErrorCode;
 import com.kernelsquare.core.common_response.error.exception.BusinessException;
 import com.kernelsquare.domainmysql.domain.tech_stack.entity.TechStack;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -33,5 +35,10 @@ public class TechStackReaderImpl implements TechStackReader {
     @Override
     public Boolean existsBySkill(String skill) {
         return techStackRepository.existsBySkill(skill);
+    }
+
+    @Override
+    public Page<TechStack> findAllPage(Pageable pageable) {
+        return techStackRepository.findAll(pageable);
     }
 }
