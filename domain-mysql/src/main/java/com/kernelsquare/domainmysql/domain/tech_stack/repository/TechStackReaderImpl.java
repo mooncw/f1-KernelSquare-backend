@@ -6,19 +6,32 @@ import com.kernelsquare.domainmysql.domain.tech_stack.entity.TechStack;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 @RequiredArgsConstructor
 public class TechStackReaderImpl implements TechStackReader {
     private final TechStackRepository techStackRepository;
 
     @Override
-    public TechStack find(String skill) {
+    public TechStack findBySkill(String skill) {
         return techStackRepository.findBySkill(skill)
             .orElseThrow(() -> new BusinessException(TechStackErrorCode.TECH_STACK_NOT_FOUND));
     }
 
     @Override
-    public Boolean exists(String skill) {
+    public TechStack find(Long techStackId) {
+        return techStackRepository.findById(techStackId)
+            .orElseThrow(() -> new BusinessException(TechStackErrorCode.TECH_STACK_NOT_FOUND));
+    }
+
+    @Override
+    public List<TechStack> findAll() {
+        return techStackRepository.findAll();
+    }
+
+    @Override
+    public Boolean existsBySkill(String skill) {
         return techStackRepository.existsBySkill(skill);
     }
 }

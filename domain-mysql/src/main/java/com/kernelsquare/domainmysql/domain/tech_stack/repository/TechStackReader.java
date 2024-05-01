@@ -2,8 +2,14 @@ package com.kernelsquare.domainmysql.domain.tech_stack.repository;
 
 import com.kernelsquare.domainmysql.domain.tech_stack.entity.TechStack;
 
-public interface TechStackReader {
-    TechStack find(String skill);
+import java.util.List;
 
-    Boolean exists(String skill);
+public interface TechStackReader {
+    TechStack findBySkill(String skill);
+
+    TechStack find(Long techStackId);
+
+    List<TechStack> findAll();
+
+    Boolean existsBySkill(String skill);
 }
