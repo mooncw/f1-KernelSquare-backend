@@ -45,17 +45,6 @@ public class CoffeeChatController {
 		return ResponseEntityFactory.toResponseEntity(ROOM_ENTRY_SUCCESSFUL, response);
 	}
 
-	@PostMapping("/coffeechat/rooms/{roomKey}")
-	public ResponseEntity<ApiResponse> leaveCoffeeChatRoom(
-		@Valid
-		@PathVariable
-		String roomKey
-	) {
-		coffeeChatService.leaveCoffeeChatRoom(roomKey);
-
-		return ResponseEntityFactory.toResponseEntity(COFFEE_CHAT_ROOM_LEAVE);
-	}
-
 	@GetMapping("/coffeechat/rooms/{roomKey}")
 	public ResponseEntity<ApiResponse<FindChatHistoryResponse>> findChatHistory(
 		@Valid
