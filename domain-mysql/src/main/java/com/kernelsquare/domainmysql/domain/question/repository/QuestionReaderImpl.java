@@ -32,4 +32,9 @@ public class QuestionReaderImpl implements QuestionReader {
     public List<Question> findClosedQuestions(Boolean closedStatus) {
         return questionRepository.findAllByClosedStatus(closedStatus);
     }
+
+    @Override
+    public List<Question> findAll() {
+        return questionRepository.findAll();
+    }
 }

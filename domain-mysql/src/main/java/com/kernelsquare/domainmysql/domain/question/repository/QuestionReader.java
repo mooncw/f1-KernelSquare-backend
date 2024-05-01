@@ -13,4 +13,6 @@ public interface QuestionReader {
     Page<QuestionInfo.FindAllQuestionsInfo> findAllQuestions(Pageable pageable);
 
     List<Question> findClosedQuestions(Boolean closedStatus);
+
+    List<Question> findAll();
 }
