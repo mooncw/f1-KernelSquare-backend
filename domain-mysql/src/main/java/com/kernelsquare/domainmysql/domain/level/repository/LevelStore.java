@@ -4,4 +4,6 @@ import com.kernelsquare.domainmysql.domain.level.entity.Level;
 
 public interface LevelStore {
     void store(Level level);
+
+    void delete(Long levelId);
 }

@@ -11,6 +11,5 @@ import com.kernelsquare.domainmysql.domain.level.entity.Level;
 public interface LevelRepository extends JpaRepository<Level, Long> {
 	Optional<Level> findByName(Long name);
 
-	@Query("SELECT l FROM Level l WHERE l.name = :levelName AND l.id != :levelId")
-	Optional<Level> findByNameAndIdNot(@Param("levelName") Long levelName, @Param("levelId") Long levelId);
+	Boolean existsByNameAndIdNot(Long levelName, Long levelId);
 }

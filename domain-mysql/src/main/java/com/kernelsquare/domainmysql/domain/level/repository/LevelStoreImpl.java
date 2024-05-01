@@ -13,4 +13,9 @@ public class LevelStoreImpl implements LevelStore {
     public void store(Level level) {
         levelRepository.save(level);
     }
+
+    @Override
+    public void delete(Long levelId) {
+        levelRepository.deleteById(levelId);
+    }
 }
