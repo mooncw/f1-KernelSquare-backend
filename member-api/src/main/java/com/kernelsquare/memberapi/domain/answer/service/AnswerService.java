@@ -78,7 +78,7 @@ public class AnswerService {
 		member.addExperience(ExperiencePolicy.MEMBER_DAILY_ATTENDED.getReward());
 		if (member.isExperienceExceed(member.getExperience())) {
 			member.updateExperience(member.getExperience() - member.getLevel().getLevelUpperLimit());
-			Level nextLevel = levelReader.findLevel(member.getLevel().getName() + 1);
+			Level nextLevel = levelReader.findByLevelName(member.getLevel().getName() + 1);
 			member.updateLevel(nextLevel);
 		}
 
