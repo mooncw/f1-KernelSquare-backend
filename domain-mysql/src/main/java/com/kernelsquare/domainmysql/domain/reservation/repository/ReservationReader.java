@@ -17,4 +17,6 @@ public interface ReservationReader {
     Long countInReservationArticle(Long articleId);
 
     Long countAvailableInReservationArticle(Long articleId);
+
+    Reservation find(Long reservationId);
 }

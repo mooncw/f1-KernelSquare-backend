@@ -1,5 +1,7 @@
 package com.kernelsquare.domainmysql.domain.reservation.repository;
 
+import com.kernelsquare.core.common_response.error.code.ReservationErrorCode;
+import com.kernelsquare.core.common_response.error.exception.BusinessException;
 import com.kernelsquare.domainmysql.domain.reservation.entity.Reservation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -40,5 +42,11 @@ public class ReservationReaderImpl implements ReservationReader {
     @Override
     public Long countAvailableInReservationArticle(Long articleId) {
         return reservationRepository.countByReservationArticleIdAndMemberIdIsNull(articleId);
+    }
+
+    @Override
+    public Reservation find(Long reservationId) {
+        return reservationRepository.findById(reservationId)
+            .orElseThrow(() -> new BusinessException(ReservationErrorCode.RESERVATION_NOT_FOUND));
     }
 }
