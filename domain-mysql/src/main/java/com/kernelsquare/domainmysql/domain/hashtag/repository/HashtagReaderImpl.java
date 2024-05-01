@@ -12,7 +12,12 @@ public class HashtagReaderImpl implements HashtagReader {
     private final HashtagRepository hashtagRepository;
 
     @Override
-    public List<Hashtag> findAll(Long articleId) {
+    public List<Hashtag> findAll() {
+        return hashtagRepository.findAll();
+    }
+
+    @Override
+    public List<Hashtag> findAllInReservationArticle(Long articleId) {
         return hashtagRepository.findAllByReservationArticleId(articleId);
     }
 
