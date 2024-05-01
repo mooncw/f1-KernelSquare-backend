@@ -10,4 +10,6 @@ public interface AnswerReader {
     List<Answer> findAnswers(Long questionId);
 
     List<Answer> findAnswersTop3(Long questionId);
+
+    Boolean existsMyAnswerInQuestion(String nickname, Long questionId);
 }

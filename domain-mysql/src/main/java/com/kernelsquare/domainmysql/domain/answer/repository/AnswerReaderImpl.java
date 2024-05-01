@@ -29,4 +29,9 @@ public class AnswerReaderImpl implements AnswerReader {
     public List<Answer> findAnswersTop3(Long questionId) {
         return answerRepository.findAnswersByQuestionIdSortedByVoteCount(questionId, SystemConstants.ANSWER_BOT);
     }
+
+    @Override
+    public Boolean existsMyAnswerInQuestion(String nickname, Long questionId) {
+        return answerRepository.existsByMemberNicknameAndQuestionId(nickname, questionId);
+    }
 }
