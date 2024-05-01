@@ -13,4 +13,9 @@ public class CoffeeChatStoreImpl implements CoffeeChatStore {
     public ChatRoom store(ChatRoom chatRoom) {
         return coffeeChatRepository.save(chatRoom);
     }
+
+    @Override
+    public void deleteWithReservationArticle(Long reservationArticleId) {
+        coffeeChatRepository.deleteChatRoom(reservationArticleId);
+    }
 }
