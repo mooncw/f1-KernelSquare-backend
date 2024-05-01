@@ -22,4 +22,14 @@ public class MemberReaderImpl implements MemberReader{
         return memberRepository.findByEmail(email)
             .orElseThrow(() -> new BusinessException(AuthErrorCode.INVALID_ACCOUNT));
     }
+
+    @Override
+    public Boolean existsMemberEmail(String email) {
+        return memberRepository.existsByEmail(email);
+    }
+
+    @Override
+    public Boolean existsMemberNickname(String nickname) {
+        return memberRepository.existsByNickname(nickname);
+    }
 }
