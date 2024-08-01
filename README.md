@@ -1,5 +1,5 @@
 # f1-KernelSquare
-지속가능한 성장을 위한 개발자 커뮤니티 [KernelSquare 사이트](https://kernelsquare.live)
+지속가능한 성장을 위한 개발자 커뮤니티 [KernelSquare 사이트](https://kernelsquare.live) (비용 문제로 서비스 중단)
 
 이 Repository는 팀 프로젝트가 끝난 후 개인적으로 진행한 것을 반영했습니다.
 
